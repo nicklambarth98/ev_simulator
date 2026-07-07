@@ -45,6 +45,20 @@ class DriverProfile:
     charging_duration_hrs: float     # typical session duration in hours
     miles_per_year: float            # annual mileage
     target_soc: float                # desired SoC after charging
+    
+    def __post_init__(self):
+        # Validate that parameters are within reasonable bounds
+        assert 0 <= self.population_share <= 1, "population_share must be between 0 and 1"
+        assert 0 <= self.soc_mean <= 1, "soc_mean must be between 0 and 1"
+        assert 0 <= self.soc_min <= self.soc_max <= 1, "soc_min and soc_max must be between 0 and 1"
+        assert self.plugin_hour_std >= 0, "plugin_hour_std must be non negative"
+        assert self.soc_std >= 0, "soc_std must be non negative"
+        assert self.plugin_freq >= 0, "plugin_freq must be non negative"
+        assert self.charger_kw > 0, "charger_kw must be positive"
+        assert self.battery_capacity_kwh > 0, "battery_capacity_kwh must be positive"
+        assert self.charging_duration_hrs > 0, "charging_duration_hrs must be positive"
+        assert self.miles_per_year >= 0, "miles_per_year must be non negative"
+        assert 0 <= self.target_soc <= 1, "target_soc must be between 0 and 1"
 
 
 class EVDriver:

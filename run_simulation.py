@@ -88,10 +88,10 @@ def main():
     )
 
     if df.empty:
-        print("No plug-in events generated.")
+        print("No plug in events generated.")
         return
 
-    print(f"Generated {len(df):,} plug-in events\n")
+    print(f"Generated {len(df):,} plug in events\n")
 
     # Summary by archetype
     summary = (
@@ -110,7 +110,7 @@ def main():
     # Hourly stats
     hourly = compute_hourly_stats(df)
     peak_hour = hourly.loc[hourly["pct_plugged_in"].idxmax(), "hour"]
-    print(f"\nPeak plug-in hour: {int(peak_hour):02d}:00")
+    print(f"\nPeak plug in hour: {int(peak_hour):02d}:00")
 
     # Optionally save
     if args.output:
