@@ -4,8 +4,8 @@ app.py
 Streamlit dashboard for the EV driver behaviour simulator.
 
 Two tabs:
-  1. Single Agent  — simulate one driver, see their plug-in times and SoC
-  2. Population    — simulate many agents, see aggregate hourly patterns
+    1. Single Agent  — simulate one driver, see their plug in times and SoC
+    2. Population    — simulate many agents, see aggregate hourly patterns
 
 Run with:
     streamlit run app.py
@@ -90,6 +90,20 @@ with tab1:
             else:
                 st.success(f"**{len(df)} plug-in events** over {(end - start).days} days")
 
+                m1, m2, m3 = st.columns(3)
+
+                m1.metric(
+                    "Total plug-in events",
+                    f"{len(df_pop):,}"
+                )
+                m2.metric(
+                    "Total energy needed (kWh)",
+                    f"{df_pop['energy_needed_kwh'].sum():,.0f}"
+                )
+                m3.metric(
+                    "Total flexibility available (kWh)",
+                    f"{df_pop['flexibility_kwh'].sum():,.0f}"
+                )
                 col_a, col_b = st.columns(2)
 
                 # Chart 1: plug-in events over time (x=date, y=hour, size=SoC)
@@ -288,9 +302,55 @@ with tab2:
                 fig5.update_layout(xaxis=dict(range=[0, 24], dtick=2))
                 st.plotly_chart(fig5, use_container_width=True)
 
+                # Chart 4: aggregate flexibility available by hour
+                st.markdown("---")
+                st.markdown("### ⚡ Grid Flexibility Available by Hour")
+                st.write(
+                    "Flexibility is the energy each driver *could* accept beyond their target SoC. "
+                    "This represents the headroom Axle could use for grid balancing."
+                )
+
+                col_c, col_d = st.columns(2)
+
+                with col_c:
+                    fig6 = go.Figure()
+
+                    # Bar: total fleet flexibility by hour
+                    fig6.add_trace(go.Bar(
+                        x=hourly["hour"],
+                        y=hourly["total_flexibility_kwh"],
+                        name="Total flexibility (kWh)",
+                        marker_color="#4CAF50",
+                        opacity=0.8,
+                    ))
+
+                    fig6.update_layout(
+                        title="Total fleet flexibility available by hour",
+                        xaxis=dict(title="Hour of day", dtick=2),
+                        yaxis=dict(title="Flexibility (kWh)"),
+                        showlegend=False,
+                    )
+                    st.plotly_chart(fig6, use_container_width=True)
+                
+                with col_d:
+                    fig7 = px.box(
+                        df_pop,
+                        x="archetype",
+                        y="flexibility_kwh",
+                        color="archetype",
+                        labels={
+                            "flexibility_kwh": "Flexibility per session (kWh)",
+                            "archetype": "Archetype",
+                        },
+                        title="Per-session flexibility by archetype",
+                    )
+                    fig7.update_layout(showlegend=False)
+                    st.plotly_chart(fig7, use_container_width=True)
+
                 with st.expander("View raw data"):
                     st.dataframe(df_pop)
                     csv_pop = df_pop.to_csv(index=False)
                     st.download_button(
                         "Download CSV", csv_pop, "population_events.csv", "text/csv"
                     )
+                    
