@@ -19,7 +19,7 @@ def run_population(
     n_agents_per_archetype: int,
     start_date: str,
     end_date: str,
-    base_seed: int = 42,
+    base_seed: int = 17,
     weight_by_population_share: bool = False,
 ) -> pd.DataFrame:
     """
@@ -54,7 +54,7 @@ def run_population(
 
     for archetype_key, profile in archetypes.items():
 
-        # Optionally scale agent count by real-world population share
+        # Optionally scale agent count by real world population share
         if weight_by_population_share:
             n = max(1, round(n_agents_per_archetype * profile.population_share))
         else:
