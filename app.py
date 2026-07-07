@@ -66,8 +66,8 @@ with tab1:
         st.markdown(f"- Population share: **{profile.population_share:.0%}**")
         st.markdown(f"- Battery: **{profile.battery_capacity_kwh} kWh**")
         st.markdown(f"- Charger: **{profile.charger_kw} kW**")
-        st.markdown(f"- Avg plug-in freq: **{profile.plugin_freq:.1f}/day**")
-        st.markdown(f"- Mean plug-in SoC: **{profile.soc_mean:.0%}**")
+        st.markdown(f"- Avg plug in freq: **{profile.plugin_freq:.1f}/day**")
+        st.markdown(f"- Mean plug in SoC: **{profile.soc_mean:.0%}**")
 
     with col2:
         start = st.date_input("Start date", value=date(2024, 1, 1))
@@ -86,27 +86,27 @@ with tab1:
             df = driver.simulate_period(str(start), str(end))
 
             if df.empty:
-                st.warning("No plug-in events in this period — try a longer range.")
+                st.warning("No plug in events in this period — try a longer range.")
             else:
-                st.success(f"**{len(df)} plug-in events** over {(end - start).days} days")
+                st.success(f"**{len(df)} plug in events** over {(end - start).days} days")
 
                 m1, m2, m3 = st.columns(3)
 
                 m1.metric(
-                    "Total plug-in events",
-                    f"{len(df_pop):,}"
+                    "Total plug in events",
+                    f"{len(df):,}"
                 )
                 m2.metric(
                     "Total energy needed (kWh)",
-                    f"{df_pop['energy_needed_kwh'].sum():,.0f}"
+                    f"{df['energy_needed_kwh'].sum():,.0f}"
                 )
                 m3.metric(
                     "Total flexibility available (kWh)",
-                    f"{df_pop['flexibility_kwh'].sum():,.0f}"
+                    f"{df['flexibility_kwh'].sum():,.0f}"
                 )
                 col_a, col_b = st.columns(2)
 
-                # Chart 1: plug-in events over time (x=date, y=hour, size=SoC)
+                # Chart 1: plug in events over time (x=date, y=hour, size=SoC)
                 with col_a:
                     fig1 = px.scatter(
                         df,
@@ -117,25 +117,25 @@ with tab1:
                         color_continuous_scale="RdYlGn",
                         range_color=[0, 1],
                         labels={
-                            "plugin_hour": "Plug-in hour",
-                            "soc_at_plugin": "SoC at plug-in",
+                            "plugin_hour": "Plug in hour",
+                            "soc_at_plugin": "SoC at plug in",
                             "date": "Date",
                             "energy_needed_kwh": "Energy needed (kWh)",
                         },
-                        title="Plug-in events over time",
+                        title="Plug in events over time",
                     )
                     fig1.update_layout(yaxis=dict(range=[0, 24]))
                     st.plotly_chart(fig1, use_container_width=True)
 
-                # Chart 2: SoC at plug-in histogram
+                # Chart 2: SoC at plug in histogram
                 with col_b:
                     fig2 = px.histogram(
                         df,
                         x="soc_at_plugin",
                         nbins=20,
                         color_discrete_sequence=["#FF6B35"],
-                        labels={"soc_at_plugin": "SoC at plug-in"},
-                        title="Distribution of SoC at plug-in",
+                        labels={"soc_at_plugin": "SoC at plug in"},
+                        title="Distribution of SoC at plug in",
                     )
                     fig2.update_layout(xaxis=dict(tickformat=".0%", range=[0, 1]))
                     st.plotly_chart(fig2, use_container_width=True)
@@ -208,7 +208,7 @@ with tab2:
             else:
                 total_agents = n_agents * len(filtered_archetypes)
                 st.success(
-                    f"**{len(df_pop):,} plug-in events** from "
+                    f"**{len(df_pop):,} plug in events** from "
                     f"**{total_agents} agents** over "
                     f"**{(pop_end - pop_start).days} days**"
                 )
@@ -259,7 +259,7 @@ with tab2:
                         xaxis=dict(title="Hour of day", tickmode="linear", dtick=2),
                         yaxis=dict(title="Fraction of events", tickformat=".0%"),
                         yaxis2=dict(
-                            title="SoC at plug-in",
+                            title="SoC at plug in",
                             overlaying="y",
                             side="right",
                             tickformat=".0%",
@@ -277,10 +277,10 @@ with tab2:
                         y="soc_at_plugin",
                         color="archetype",
                         labels={
-                            "soc_at_plugin": "SoC at plug-in",
+                            "soc_at_plugin": "SoC at plug in",
                             "archetype": "Archetype",
                         },
-                        title="SoC at plug-in by archetype",
+                        title="SoC at plug in by archetype",
                     )
                     fig4.update_layout(
                         yaxis=dict(tickformat=".0%", range=[0, 1]),
@@ -288,7 +288,7 @@ with tab2:
                     )
                     st.plotly_chart(fig4, use_container_width=True)
 
-                # Chart 3: plug-in hour distribution by archetype
+                # Chart 3: plug in hour distribution by archetype
                 fig5 = px.histogram(
                     df_pop,
                     x="plugin_hour",
@@ -297,7 +297,7 @@ with tab2:
                     barmode="overlay",
                     opacity=0.6,
                     labels={"plugin_hour": "Hour of day", "archetype": "Archetype"},
-                    title="Plug-in time distribution by archetype",
+                    title="Plug in time distribution by archetype",
                 )
                 fig5.update_layout(xaxis=dict(range=[0, 24], dtick=2))
                 st.plotly_chart(fig5, use_container_width=True)
@@ -342,7 +342,7 @@ with tab2:
                             "flexibility_kwh": "Flexibility per session (kWh)",
                             "archetype": "Archetype",
                         },
-                        title="Per-session flexibility by archetype",
+                        title="Per session flexibility by archetype",
                     )
                     fig7.update_layout(showlegend=False)
                     st.plotly_chart(fig7, use_container_width=True)
@@ -353,4 +353,3 @@ with tab2:
                     st.download_button(
                         "Download CSV", csv_pop, "population_events.csv", "text/csv"
                     )
-                    

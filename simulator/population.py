@@ -83,10 +83,12 @@ def compute_hourly_stats(df: pd.DataFrame) -> pd.DataFrame:
     Compute population-level plug-in statistics by hour of day.
 
     For each integer hour (0-23), returns:
-    - pct_plugged_in : fraction of all events occurring in that hour
-    - soc_mean       : mean SoC at plug-in
-    - soc_p05        : 5th percentile SoC
-    - soc_p95        : 95th percentile SoC
+    - pct_plugged_in        : fraction of all events occurring in that hour
+    - soc_mean              : mean SoC at plug-in
+    - soc_p05               : 5th percentile SoC
+    - soc_p95               : 95th percentile SoC
+    - total_flexibility_kwh : sum of flexibility across all agents plugged in during that hour
+    - mean_flexibility_kwh  : mean flexibility across all agents plugged in during that hour
 
     Parameters
     ----------
@@ -111,6 +113,8 @@ def compute_hourly_stats(df: pd.DataFrame) -> pd.DataFrame:
             soc_mean=("soc_at_plugin", "mean"),
             soc_p05=("soc_at_plugin", lambda x: np.percentile(x, 5)),
             soc_p95=("soc_at_plugin", lambda x: np.percentile(x, 95)),
+            total_flexibility_kwh=("flexibility_kwh", "sum"),  
+            mean_flexibility_kwh=("flexibility_kwh", "mean"),  
         )
         .reindex(range(24), fill_value=0)
         .reset_index()
