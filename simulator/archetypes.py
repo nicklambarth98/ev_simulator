@@ -47,6 +47,24 @@ def _make_key(name: str) -> str:
         .strip("_")
     )
 
+def validate_archetypes(df: pd.DataFrame) -> None:
+    """
+    Validate the archetypes DataFrame to ensure that the values are within expected ranges.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing archetype data.
+
+    Raises
+    ------
+    ValueError
+        If any validation checks fail.
+    """
+    assert df["plugin_freq"] >= 0, "Plug-in frequency must be non-negative"
+    assert df["mean_soc"].between(0, 1).all()
+    assert df["target_soc"].between(0, 1).all()
+
 
 def load_archetypes(path: Path = DATA_PATH) -> Dict[str, DriverProfile]:
     """
@@ -70,6 +88,7 @@ def load_archetypes(path: Path = DATA_PATH) -> Dict[str, DriverProfile]:
         )
 
     df = pd.read_csv(path)
+    validate_archetypes(df)
     archetypes = {}
 
     for _, row in df.iterrows():
