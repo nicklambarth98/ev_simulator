@@ -47,7 +47,7 @@ def _make_key(name: str) -> str:
         .strip("_")
     )
 
-def validate_archetypes(df: pd.DataFrame) -> None:
+def validate_archetypes(archetypes: Dict[str, DriverProfile]) -> None:
     """
     Validate the archetypes DataFrame to ensure that the values are within expected ranges.
 
@@ -61,9 +61,11 @@ def validate_archetypes(df: pd.DataFrame) -> None:
     ValueError
         If any validation checks fail.
     """
-    assert df["plugin_freq"] >= 0, "Plug-in frequency must be non-negative"
-    assert df["mean_soc"].between(0, 1).all()
-    assert df["target_soc"].between(0, 1).all()
+    for key, profile in archetypes.items():
+        assert 0 <= profile.soc_mean <= 1, f"{profile.name}: soc_mean out of range"
+        assert 0 <= profile.target_soc <= 1, f"{profile.name}: target_soc out of range"
+        assert profile.plugin_freq >= 0, f"{profile.name}: plugin_freq must be positive"
+
 
 
 def load_archetypes(path: Path = DATA_PATH) -> Dict[str, DriverProfile]:
@@ -88,7 +90,6 @@ def load_archetypes(path: Path = DATA_PATH) -> Dict[str, DriverProfile]:
         )
 
     df = pd.read_csv(path)
-    validate_archetypes(df)
     archetypes = {}
 
     for _, row in df.iterrows():
@@ -119,5 +120,6 @@ def load_archetypes(path: Path = DATA_PATH) -> Dict[str, DriverProfile]:
             charging_duration_hrs=float(row["Charging duration (hrs)"]),
             miles_per_year=float(row["Miles/yr"]),
         )
+    validate_archetypes(archetypes)
 
     return archetypes

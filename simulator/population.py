@@ -3,9 +3,6 @@ population.py
 -------------
 Runs a population of EVDriver agents and aggregates their results.
 
-This module contains only pure functions with no side effects — it is
-imported by both app.py (Streamlit) and run_simulation.py (CLI) without
-any risk of code executing on import.
 """
 
 import pandas as pd
